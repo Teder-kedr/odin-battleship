@@ -139,4 +139,25 @@ describe("Player class", () => {
     p.placeShipSuccessfully(p.ships.at(-4), { x: 8, y: 7 }, "up");
     expect(p.gameboard.shipsOnGameboard.length).toBe(3);
   });
+
+  it("can shoot", () => {
+    const p = new Player();
+    const p2 = new Player();
+    const result = p.shoot(p2, { x: 1, y: 1 });
+    expect(result).toEqual("miss");
+    const newResult = p.shoot(p2, { x: 1, y: 1 });
+    expect(newResult).toBeNull();
+  });
+
+  it("can hit opponents boats", () => {
+    const p = new Player();
+    const p2 = new Player();
+    p2.placeShipSuccessfully(p2.ships.at(-1), { x: 6, y: 5 }, "right");
+    const shot = p.shoot(p2, { x: 6, y: 5 });
+    expect(shot).toEqual("hit");
+    const shot2 = p.shoot(p2, { x: 6, y: 5 });
+    expect(shot2).toBeNull;
+    p.shoot(p2, { x: 5, y: 5 });
+    expect(p2.ships.at(-1).health).toBe(0);
+  });
 });
