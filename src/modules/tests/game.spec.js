@@ -1,4 +1,4 @@
-const { Ship, Gameboard } = require("../game");
+const { Ship, Gameboard, Player } = require("../game");
 
 describe("Ship class", () => {
   const s = new Ship(5);
@@ -113,5 +113,30 @@ describe("Gameboard class", () => {
     expect(g.shotsCounter).toBe(4);
     expect(s.isAlive).toBe(false);
     expect(g.shotsOnTargetCounter).toBe(1);
+  });
+});
+
+describe("Player class", () => {
+  it("starts with correct number of ships", () => {
+    const p = new Player();
+    expect(p.ships.length).toBe(1 + 2 + 3 + 3);
+  });
+
+  it("can place ships", () => {
+    const p = new Player();
+    expect(p.placeShipSuccessfully(p.ships[0], { x: 1, y: 1 }, "up")).toBe(true);
+    expect(p.placeShipSuccessfully(p.ships.at(-1), { x: 10, y: 10 }, "right")).toBe(true);
+  });
+
+  it("can't place ships where it shouldn't", () => {
+    const p = new Player();
+    p.placeShipSuccessfully(p.ships[0], { x: 1, y: 1 }, "up");
+    expect(p.placeShipSuccessfully(p.ships[1], { x: 2, y: 1 }, "up")).toBe(false);
+    p.placeShipSuccessfully(p.ships.at(-1), { x: 5, y: 5 }, "up");
+    expect(p.placeShipSuccessfully(p.ships.at(-2), { x: 5, y: 7 }, "up")).toBe(false);
+    p.placeShipSuccessfully(p.ships.at(-2), { x: 8, y: 7 }, "up");
+    p.placeShipSuccessfully(p.ships.at(-3), { x: 8, y: 7 }, "up");
+    p.placeShipSuccessfully(p.ships.at(-4), { x: 8, y: 7 }, "up");
+    expect(p.gameboard.shipsOnGameboard.length).toBe(3);
   });
 });

@@ -116,7 +116,37 @@ class Gameboard {
 }
 
 class Player {
-  constructor() {}
+  gameboard: Gameboard;
+  ships: Array<Ship>;
+
+  constructor() {
+    this.gameboard = new Gameboard(10);
+    this.ships = this.initShips();
+  }
+
+  initShips() {
+    const result = [new Ship(5)];
+    result.push(new Ship(4), new Ship(4));
+    result.push(new Ship(3), new Ship(3), new Ship(3));
+    result.push(new Ship(2), new Ship(2), new Ship(2));
+    return result;
+  }
+
+  placeShipSuccessfully(ship: Ship, frontPos: Coords, facing: "up" | "right") {
+    const currentShipsOnBoard = this.gameboard.shipsOnGameboard.length;
+    this.gameboard.placeShip(ship, frontPos, facing);
+    if (this.gameboard.shipsOnGameboard.length === currentShipsOnBoard + 1) return true;
+    return false;
+  }
+
+  shoot(opponent: Player, pos: Coords): "hit" | "miss" | null {
+    const currentShotsCounter = opponent.gameboard.shotsCounter; // to check if same shot was attempted before
+    const currentShotsOnTarget = opponent.gameboard.shotsOnTargetCounter;
+    opponent.gameboard.receiveShot(pos);
+    if (opponent.gameboard.shotsCounter === currentShotsCounter) return null;
+    if (opponent.gameboard.shotsOnTargetCounter > currentShotsOnTarget) return "hit";
+    return "miss";
+  }
 }
 
 class AI extends Player {
@@ -125,4 +155,4 @@ class AI extends Player {
   }
 }
 
-module.exports = { Ship, BoardCell, Gameboard };
+module.exports = { Ship, Gameboard, Player };
