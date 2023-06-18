@@ -4,11 +4,13 @@ class Ship {
   size: number;
   health: number;
   isAlive: boolean;
+  bodyCoords: Array<Coords>;
 
   constructor(size: number) {
     this.size = size;
     this.health = size;
     this.isAlive = true;
+    this.bodyCoords = [];
   }
 
   getHit() {
@@ -100,6 +102,7 @@ class Gameboard {
       this.grid.at(pos).isOccupied = true;
       this.blockAdjacentCoords(pos);
     }
+    ship.bodyCoords.push(...bodyCoords);
     this.shipsOnGameboard.push(ship);
   }
 
@@ -141,7 +144,7 @@ class Player {
 
   shoot(opponent: Player, pos: Coords): "hit" | "miss" | null {
     const currentShotsCounter = opponent.gameboard.shotsCounter; // to check if same shot was attempted before
-    const currentShotsOnTarget = opponent.gameboard.shotsOnTargetCounter;
+    const currentShotsOnTarget = opponent.gameboard.shotsOnTargetCounter; // to check if it hit a ship
     opponent.gameboard.receiveShot(pos);
     if (opponent.gameboard.shotsCounter === currentShotsCounter) return null;
     if (opponent.gameboard.shotsOnTargetCounter > currentShotsOnTarget) return "hit";
@@ -150,9 +153,81 @@ class Player {
 }
 
 class AI extends Player {
+  clue;
+  impossibleCoords: Array<Coords>;
+
   constructor() {
     super();
+    this.clue = null;
+    this.impossibleCoords = [];
+  }
+
+  getRandomPosition() {
+    const randomX = Math.ceil(Math.random() * 10);
+    const randomY = Math.ceil(Math.random() * 10);
+    return { x: randomX, y: randomY };
+  }
+
+  shoot(opponent: Player, pos?: Coords): "hit" | "miss" | null {
+    if (pos) {
+      return Player.prototype.shoot(opponent, pos);
+    } else if (this.clue === null) {
+      return this.shootRandomly(opponent);
+    } else {
+      return null; // !!!!!!!!!!!!
+    }
+  }
+
+  shootRandomly(opponent: Player) {
+    const countOfShipsAlive = opponent.ships.filter((ship) => {
+      if (ship.isAlive === true) return ship;
+    }).length;
+
+    let randomPosition = this.getRandomPosition();
+    while (this.impossibleCoords.includes(randomPosition)) {
+      randomPosition = this.getRandomPosition();
+      // (if impossible to hit anything, get another position)
+    }
+    let shotResult = Player.prototype.shoot(opponent, randomPosition);
+    while (shotResult === null) {
+      randomPosition = this.getRandomPosition();
+      shotResult = Player.prototype.shoot(opponent, randomPosition); // if mistake, try again
+    }
+    if (shotResult === "hit") {
+      // update clues
+
+      const newCountOfShipsAlive = opponent.ships.filter((ship) => {
+        if (ship.isAlive === true) return ship;
+      }).length;
+      if (countOfShipsAlive === newCountOfShipsAlive + 1) {
+        const theShip = opponent.gameboard.grid.at(randomPosition).ship;
+        for (const cell of theShip.bodyCoords) {
+          this.pushImpossibleCoords(cell);
+        }
+      }
+    }
+    return shotResult;
+  }
+
+  pushImpossibleCoords(pos: Coords) {
+    const deltas = [
+      [-1, 1],
+      [0, 1],
+      [1, 1],
+      [-1, 0],
+      [1, 0],
+      [-1, -1],
+      [0, -1],
+      [1, -1],
+    ];
+    for (const delta of deltas) {
+      const cellCoords = { x: pos.x + delta[0], y: pos.y + delta[1] };
+      if (cellCoords.x < 1 || cellCoords.x > 10) continue;
+      if (cellCoords.y < 1 || cellCoords.y > 10) continue;
+      if (this.impossibleCoords.includes(cellCoords)) continue;
+      this.impossibleCoords.push(cellCoords);
+    }
   }
 }
 
-module.exports = { Ship, Gameboard, Player };
+module.exports = { Ship, Gameboard, Player, AI };

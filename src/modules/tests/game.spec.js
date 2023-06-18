@@ -1,4 +1,4 @@
-const { Ship, Gameboard, Player } = require("../game");
+const { Ship, Gameboard, Player, AI } = require("../game");
 
 describe("Ship class", () => {
   const s = new Ship(5);
@@ -159,5 +159,29 @@ describe("Player class", () => {
     expect(shot2).toBeNull;
     p.shoot(p2, { x: 5, y: 5 });
     expect(p2.ships.at(-1).health).toBe(0);
+  });
+});
+
+describe("AI class", () => {
+  it("can shoot", () => {
+    const p = new Player();
+    const ai = new AI();
+    ai.shoot(p);
+    expect(p.gameboard.shotsCounter).toBe(1);
+    const shot = ai.shoot(p);
+    expect(shot).toEqual("miss");
+    expect(p.gameboard.shotsCounter).toBe(2);
+  });
+
+  it("can hit a ship", () => {
+    const p = new Player();
+    const ai = new AI();
+    p.placeShipSuccessfully(p.ships.at(-1), { x: 1, y: 1 }, "up");
+    ai.shoot(p, { x: 1, y: 1 });
+    expect(p.gameboard.shotsCounter).toBe(1);
+    expect(p.gameboard.shotsOnTargetCounter).toBe(1);
+    ai.shoot(p, { x: 1, y: 2 });
+    expect(p.gameboard.shotsOnTargetCounter).toBe(2);
+    expect(p.ships.at(-1).isAlive).toBe(false);
   });
 });
