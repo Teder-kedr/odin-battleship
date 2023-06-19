@@ -1,0 +1,20 @@
+import { Player, AI } from "./modules/game";
+import { init as initDisplay, refreshBoard1, refreshBoard2 } from "./modules/display";
+
+initDisplay();
+// const p = new Player();
+// const ai = new AI();
+// p.placeShipSuccessfully(p.ships[0], { x: 3, y: 3 }, "up");
+// ai.placeShipSuccessfully(p.ships[0], { x: 3, y: 3 }, "up");
+// ai.shoot(p);
+// ai.shoot(p);
+// ai.shoot(p);
+// ai.shoot(p);
+// ai.shoot(p);
+// ai.shoot(p);
+// ai.shoot(p);
+// refreshBoard1(p.gameboard.grid);
+// p.shoot(ai, { x: 1, y: 1 });
+// p.shoot(ai, { x: 2, y: 2 });
+// p.shoot(ai, { x: 3, y: 3 });
+// refreshBoard2(ai.gameboard.grid);

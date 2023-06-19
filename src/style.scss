@@ -1,3 +1,123 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
 body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+#root,
+#__next {
+  isolation: isolate;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
   background-color: pink;
+}
+
+#app {
+  height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: 1fr, 1fr;
+  grid-template-rows: 1fr, 1fr;
+}
+
+.player-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+#section1 {
+  grid-row: 1;
+  grid-column: 1;
+}
+
+#section2 {
+  grid-row: 1;
+  grid-column: 2;
+}
+
+.player-board {
+  width: 350px;
+  height: 350px;
+  border: 3px solid black;
+  margin-inline: 4rem;
+
+
+  display: grid;
+}
+
+.cell {
+  outline: 1px solid #888;
+  background-color: rgba($color: #eee, $alpha: 0.2);
+
+  &--hidden {
+    background-color: #eee;
+  }
+
+  &--hit {
+    background-color: rgba($color: #f33, $alpha: 0.3);
+  }
+
+  &--ship-part {
+    background-color: #444;
+  }
+
+  &--hit-ship {
+    background-color: #d00;
+  }
+}
+
+.player-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.text-field {
+  grid-column: 1 / span 2;
+  padding-top: 2rem;
+  font-size: 2rem;
+  text-align: center;
 }

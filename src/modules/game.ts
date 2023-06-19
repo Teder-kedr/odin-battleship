@@ -118,7 +118,7 @@ class Gameboard {
   }
 }
 
-class Player {
+export class Player {
   gameboard: Gameboard;
   ships: Array<Ship>;
 
@@ -158,7 +158,7 @@ class Player {
   }
 }
 
-class AI extends Player {
+export class AI extends Player {
   clue: Coords | null;
   clueDeltas: Array<any>;
   impossibleCoords: Array<Coords>;
@@ -224,14 +224,20 @@ class AI extends Player {
     const countOfShipsAlive = opponent.countShipsAlive();
 
     let randomPosition = this.getRandomPosition();
+    let safeLoop = 0;
     while (this.impossibleCoords.includes(randomPosition)) {
       randomPosition = this.getRandomPosition();
       // (if impossible to hit anything, get another position)
+      safeLoop++;
+      if (safeLoop > 1499) throw new Error("Something went wrong");
     }
+    safeLoop = 0;
     let shotResult = Player.prototype.shoot(opponent, randomPosition);
     while (shotResult === null) {
       randomPosition = this.getRandomPosition();
       shotResult = Player.prototype.shoot(opponent, randomPosition); // if mistake, try again
+      safeLoop++;
+      if (safeLoop > 1499) throw new Error("Something went wrong");
     }
     if (shotResult === "hit") {
       this.clue = randomPosition; // update clues
