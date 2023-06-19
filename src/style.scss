@@ -90,14 +90,14 @@ body {
 
 .cell {
   outline: 1px solid #888;
-  background-color: rgba($color: #eee, $alpha: 0.2);
+  background-color: rgba($color: pink, $alpha: 1);
 
   &--hidden {
     background-color: #eee;
   }
 
   &--hit {
-    background-color: rgba($color: #f33, $alpha: 0.3);
+    background-color: rgba($color: #f00, $alpha: 0.3);
   }
 
   &--ship-part {
