@@ -124,7 +124,7 @@ export class Player {
 
   constructor() {
     this.gameboard = new Gameboard(10);
-    this.ships = this.initShips();
+    this.ships = [...this.initShips()];
   }
 
   initShips() {
@@ -161,7 +161,7 @@ export class Player {
 export class AI extends Player {
   clue: Coords | null;
   clueDeltas: Array<any>;
-  impossibleCoords: Array<Coords>;
+  impossibleCoords: Set<string>;
 
   constructor() {
     super();
@@ -172,7 +172,7 @@ export class AI extends Player {
       [0, -1],
       [-1, 0],
     ];
-    this.impossibleCoords = [];
+    this.impossibleCoords = new Set();
   }
 
   shoot(opponent: Player, pos?: Coords): "hit" | "miss" | null {
@@ -225,7 +225,7 @@ export class AI extends Player {
 
     let randomPosition = this.getRandomPosition();
     let safeLoop = 0;
-    while (this.impossibleCoords.includes(randomPosition)) {
+    while ([...this.impossibleCoords].includes(`${randomPosition.x}-${randomPosition.y}`)) {
       randomPosition = this.getRandomPosition();
       // (if impossible to hit anything, get another position)
       safeLoop++;
@@ -263,7 +263,7 @@ export class AI extends Player {
     let possibleShot = { x: x + randomDelta[0], y: y + randomDelta[1] };
     let safeLoop = 0;
     while (
-      this.impossibleCoords.includes(possibleShot) ||
+      [...this.impossibleCoords].includes(`${possibleShot.x}-${possibleShot.y}`) ||
       opponent.gameboard.grid.at(possibleShot).isHit === true ||
       possibleShot.x < 1 ||
       possibleShot.x > 10 ||
@@ -304,8 +304,8 @@ export class AI extends Player {
       const cellCoords = { x: pos.x + delta[0], y: pos.y + delta[1] };
       if (cellCoords.x < 1 || cellCoords.x > 10) continue;
       if (cellCoords.y < 1 || cellCoords.y > 10) continue;
-      if (this.impossibleCoords.includes(cellCoords)) continue;
-      this.impossibleCoords.push(cellCoords);
+      if ([...this.impossibleCoords].includes(`${cellCoords.x}-${cellCoords.y}`)) continue;
+      this.impossibleCoords.add(`${cellCoords.x}-${cellCoords.y}`);
     }
   }
 }
