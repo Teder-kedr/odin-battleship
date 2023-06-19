@@ -150,38 +150,78 @@ class Player {
     if (opponent.gameboard.shotsOnTargetCounter > currentShotsOnTarget) return "hit";
     return "miss";
   }
+
+  countShipsAlive() {
+    return this.ships.filter((ship) => {
+      if (ship.isAlive === true) return ship;
+    }).length;
+  }
 }
 
 class AI extends Player {
-  clue;
+  clue: Coords | null;
+  clueDeltas: Array<any>;
   impossibleCoords: Array<Coords>;
 
   constructor() {
     super();
     this.clue = null;
+    this.clueDeltas = [
+      [0, 1],
+      [1, 0],
+      [0, -1],
+      [-1, 0],
+    ];
     this.impossibleCoords = [];
-  }
-
-  getRandomPosition() {
-    const randomX = Math.ceil(Math.random() * 10);
-    const randomY = Math.ceil(Math.random() * 10);
-    return { x: randomX, y: randomY };
   }
 
   shoot(opponent: Player, pos?: Coords): "hit" | "miss" | null {
     if (pos) {
-      return Player.prototype.shoot(opponent, pos);
+      const countOfShipsAlive = opponent.countShipsAlive();
+      const shotResult = Player.prototype.shoot(opponent, pos);
+      if (shotResult === "hit") {
+        if (this.clue) {
+          if (this.clue.x === pos.x + 1 || this.clue.x === pos.x - 1) {
+            this.clueDeltas = [
+              [1, 0],
+              [-1, 0],
+            ];
+          } else {
+            this.clueDeltas = [
+              [0, 1],
+              [0, -1],
+            ];
+          }
+        }
+        this.clue = pos; // update clues
+
+        const newCountOfShipsAlive = opponent.countShipsAlive();
+
+        if (countOfShipsAlive === newCountOfShipsAlive + 1) {
+          this.clue = null; // forget all clues
+          this.clueDeltas = [
+            [0, 1],
+            [1, 0],
+            [0, -1],
+            [-1, 0],
+          ];
+
+          const theShip = opponent.gameboard.grid.at(pos).ship;
+          for (const cell of theShip.bodyCoords) {
+            this.pushImpossibleCoords(cell);
+          }
+        }
+      }
+      return shotResult;
     } else if (this.clue === null) {
       return this.shootRandomly(opponent);
     } else {
-      return null; // !!!!!!!!!!!!
+      return this.shootWithClue(opponent);
     }
   }
 
   shootRandomly(opponent: Player) {
-    const countOfShipsAlive = opponent.ships.filter((ship) => {
-      if (ship.isAlive === true) return ship;
-    }).length;
+    const countOfShipsAlive = opponent.countShipsAlive();
 
     let randomPosition = this.getRandomPosition();
     while (this.impossibleCoords.includes(randomPosition)) {
@@ -194,12 +234,13 @@ class AI extends Player {
       shotResult = Player.prototype.shoot(opponent, randomPosition); // if mistake, try again
     }
     if (shotResult === "hit") {
-      // update clues
+      this.clue = randomPosition; // update clues
 
-      const newCountOfShipsAlive = opponent.ships.filter((ship) => {
-        if (ship.isAlive === true) return ship;
-      }).length;
+      const newCountOfShipsAlive = opponent.countShipsAlive();
+
       if (countOfShipsAlive === newCountOfShipsAlive + 1) {
+        this.clue = null; // forget all clues
+
         const theShip = opponent.gameboard.grid.at(randomPosition).ship;
         for (const cell of theShip.bodyCoords) {
           this.pushImpossibleCoords(cell);
@@ -207,6 +248,39 @@ class AI extends Player {
       }
     }
     return shotResult;
+  }
+
+  shootWithClue(opponent: Player): "hit" | "miss" | null {
+    const deltas = this.clueDeltas;
+    const { x, y } = this.clue!;
+    let randomDelta = deltas[Math.floor(Math.random() * deltas.length)];
+    let possibleShot = { x: x + randomDelta[0], y: y + randomDelta[1] };
+    let safeLoop = 0;
+    while (
+      this.impossibleCoords.includes(possibleShot) ||
+      opponent.gameboard.grid.at(possibleShot).isHit === true ||
+      possibleShot.x < 1 ||
+      possibleShot.x > 10 ||
+      possibleShot.y < 1 ||
+      possibleShot.y > 10
+    ) {
+      randomDelta = deltas[Math.floor(Math.random() * deltas.length)];
+      possibleShot = { x: x + randomDelta[0], y: y + randomDelta[1] };
+      // (when shot invalid, try again)
+      safeLoop++;
+      if (safeLoop > 10) break;
+    }
+    if (safeLoop > 10) {
+      this.clue = null; // if no result, forget clue
+      return null;
+    }
+    return this.shoot(opponent, possibleShot);
+  }
+
+  getRandomPosition() {
+    const randomX = Math.ceil(Math.random() * 10);
+    const randomY = Math.ceil(Math.random() * 10);
+    return { x: randomX, y: randomY };
   }
 
   pushImpossibleCoords(pos: Coords) {

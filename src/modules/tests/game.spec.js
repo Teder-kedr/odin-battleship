@@ -180,7 +180,8 @@ describe("AI class", () => {
     ai.shoot(p, { x: 1, y: 1 });
     expect(p.gameboard.shotsCounter).toBe(1);
     expect(p.gameboard.shotsOnTargetCounter).toBe(1);
-    ai.shoot(p, { x: 1, y: 2 });
+    const shotResult = ai.shoot(p, { x: 1, y: 2 });
+    expect(shotResult).toEqual("hit");
     expect(p.gameboard.shotsOnTargetCounter).toBe(2);
     expect(p.ships.at(-1).isAlive).toBe(false);
   });
