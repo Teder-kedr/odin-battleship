@@ -23,3 +23,16 @@ export class SquareGrid {
     return this.cells[index];
   }
 }
+
+export function indexToCoordinates(index: number): Coords {
+  const gridSize = 10;
+  const x = index % gridSize;
+  const y = Math.floor(index / gridSize);
+
+  return { x: x + 1, y: y + 1 };
+}
+
+export function getRandomShipDirection(): "up" | "right" {
+  if (Math.random() > 0.5) return "up";
+  return "right";
+}

@@ -1,6 +1,6 @@
 import { Coords, SquareGrid } from "./utility";
 
-class Ship {
+export class Ship {
   size: number;
   health: number;
   isAlive: boolean;
@@ -130,7 +130,7 @@ export class Player {
   initShips() {
     const result = [new Ship(5)];
     result.push(new Ship(4), new Ship(4));
-    result.push(new Ship(3), new Ship(3), new Ship(3));
+    result.push(new Ship(3), new Ship(3));
     result.push(new Ship(2), new Ship(2), new Ship(2));
     return result;
   }
@@ -233,7 +233,10 @@ export class AI extends Player {
     }
     safeLoop = 0;
     let shotResult = Player.prototype.shoot(opponent, randomPosition);
-    while (shotResult === null) {
+    while (
+      shotResult === null ||
+      [...this.impossibleCoords].includes(`${randomPosition.x}-${randomPosition.y}`)
+    ) {
       randomPosition = this.getRandomPosition();
       shotResult = Player.prototype.shoot(opponent, randomPosition); // if mistake, try again
       safeLoop++;
@@ -264,11 +267,11 @@ export class AI extends Player {
     let safeLoop = 0;
     while (
       [...this.impossibleCoords].includes(`${possibleShot.x}-${possibleShot.y}`) ||
-      opponent.gameboard.grid.at(possibleShot).isHit === true ||
       possibleShot.x < 1 ||
       possibleShot.x > 10 ||
       possibleShot.y < 1 ||
-      possibleShot.y > 10
+      possibleShot.y > 10 ||
+      opponent.gameboard.grid.at(possibleShot).isHit === true
     ) {
       randomDelta = deltas[Math.floor(Math.random() * deltas.length)];
       possibleShot = { x: x + randomDelta[0], y: y + randomDelta[1] };

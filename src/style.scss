@@ -88,20 +88,32 @@ body {
   display: grid;
 }
 
+.turn {
+  border: 5px solid gold;
+}
+
 .cell {
   outline: 1px solid #888;
   background-color: rgba($color: pink, $alpha: 1);
 
   &--hidden {
-    background-color: #eee;
+    background-color: #f4d9d9;
+
+    &:hover {
+      background-color: #d4b2b2;
+    }
   }
 
   &--hit {
-    background-color: rgba($color: #f00, $alpha: 0.3);
+    background-color: rgba($color: rgb(223, 167, 167), $alpha: 1);
   }
 
   &--ship-part {
     background-color: #444;
+  }
+
+  &--hover {
+    background-color: #666;
   }
 
   &--hit-ship {

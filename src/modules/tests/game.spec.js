@@ -119,7 +119,7 @@ describe("Gameboard class", () => {
 describe("Player class", () => {
   it("starts with correct number of ships", () => {
     const p = new Player();
-    expect(p.ships.length).toBe(1 + 2 + 3 + 3);
+    expect(p.ships.length).toBe(1 + 2 + 2 + 3);
   });
 
   it("can place ships", () => {

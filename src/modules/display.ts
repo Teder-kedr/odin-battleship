@@ -2,12 +2,27 @@ import { Player } from "./game";
 
 const section1: HTMLElement = document.querySelector("#section1")!;
 const section2: HTMLElement = document.querySelector("#section2")!;
-const board1: HTMLElement = section1.querySelector(".player-board")!;
-const board2: HTMLElement = section2.querySelector(".player-board")!;
+let board1: HTMLElement = section1.querySelector(".player-board")!;
+let board2: HTMLElement = section2.querySelector(".player-board")!;
 const textParagraph: HTMLElement = document.querySelector(".text-field > p")!;
 
-export function changeText(text: string) {
-  textParagraph.textContent = text;
+const messages = [
+  "Place your ships. Press <b>right mouse button</b> to rotate the ship...",
+  "Make your move!",
+  "Waiting for opponent to shoot...",
+  "Hit! Make your next move...",
+  "Ship destroyed! Make your next move...",
+  "YOU WON! Reload the page to play again.",
+  "YOU LOST! Reload the page to play again.",
+];
+
+export function displayMessage(i: number) {
+  textParagraph.innerHTML = messages[i];
+}
+
+export function updateBoardReference() {
+  board1 = section1.querySelector(".player-board")!;
+  board2 = section2.querySelector(".player-board")!;
 }
 
 export function init() {
