@@ -12,6 +12,7 @@ import {
 const board1: HTMLElement = document.querySelector("#section1 .player-board")!;
 const board2: HTMLElement = document.querySelector("#section2 .player-board")!;
 const board1Clone = board1.cloneNode(true);
+const board2Clone = board2.cloneNode(true);
 
 let thePlayer: Player;
 let theEnemy: AI;
@@ -120,6 +121,7 @@ function handleOwnBoardClick(cell) {
 }
 
 function handleEnemyBoardClick(index: number) {
+  if (theEnemy.gameboard.grid.atIndex(index).isHit) return;
   let shipsAliveBefore = enemyShipsAliveCount();
   let shotResult = thePlayer.shoot(theEnemy, indexToCoordinates(index));
   while (shotResult === null) {
@@ -145,7 +147,7 @@ function enemyShoots() {
   displayMessage(2);
   setTimeout(() => {
     let shotResult = theEnemy.shoot(thePlayer);
-    while (!shotResult) {
+    while (shotResult === null) {
       shotResult = theEnemy.shoot(thePlayer);
     }
     refreshBoard1(thePlayer);
@@ -201,4 +203,10 @@ function toggleShipDirection() {
 
 function endGame() {
   alert("THE END!");
+  board2.parentNode!.replaceChild(board2Clone, board2);
+  updateBoardReference();
+  initDisplay();
+  refreshBoard1(thePlayer);
+  refreshBoard2(theEnemy);
+  board2.style.cursor = "unset";
 }

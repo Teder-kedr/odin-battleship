@@ -176,6 +176,8 @@ export class AI extends Player {
   }
 
   shoot(opponent: Player, pos?: Coords): "hit" | "miss" | null {
+    console.log(this.impossibleCoords);
+
     if (pos) {
       const countOfShipsAlive = opponent.countShipsAlive();
       const shotResult = Player.prototype.shoot(opponent, pos);
@@ -234,7 +236,7 @@ export class AI extends Player {
     safeLoop = 0;
     let shotResult = Player.prototype.shoot(opponent, randomPosition);
     while (
-      shotResult === null ||
+      shotResult === null &&
       [...this.impossibleCoords].includes(`${randomPosition.x}-${randomPosition.y}`)
     ) {
       randomPosition = this.getRandomPosition();
