@@ -1,7 +1,7 @@
 # Battleship game
 
 ## Live link:
-https://teder-kedr.github.io/odin-battleship/
+https://alex-teder.github.io/odin-battleship/
 
 Study project: a classic game of battleship made with TypeScript, Jest testing framework, and Parcel bundler.
 
